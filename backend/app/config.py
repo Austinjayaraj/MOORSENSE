@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     anomaly_threshold_warning: float = 0.6
     anomaly_threshold_high: float = 0.85
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
 
 
 settings = Settings()

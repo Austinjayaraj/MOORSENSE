@@ -15,11 +15,15 @@ from app.services.anomaly_service import anomaly_service
 from app.services.ocean_service import ocean_service
 from app.services.cloud_service import cloud_service
 import asyncio
+from services.buoy.runtime import BuoyRuntime
+from app.api.routes_buoys import router as buoys_router
 
 logging.basicConfig(
     level=logging.DEBUG if settings.debug else logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
+# Avoid transport debug logs dumping provider payloads or connection details.
+logging.getLogger("aiokafka").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
@@ -35,6 +39,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(buoys_router)
 
 app.include_router(health_router, prefix="/api")
 app.include_router(stations_router, prefix="/api")
@@ -66,5 +72,10 @@ async def startup():
     ocean_service.apply_ml_status(anomaly_service)
     # Start background NOAA cloud sync
     asyncio.create_task(periodic_cloud_sync())
+    app.state.buoy_runtime = BuoyRuntime()
+    await app.state.buoy_runtime.start()
     logger.info("Startup complete")
 
+@app.on_event("shutdown")
+async def shutdown():
+    await app.state.buoy_runtime.stop()

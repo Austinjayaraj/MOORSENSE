@@ -1,84 +1,25 @@
-/**
- * MoorSense Buoy Service & Hook
- *
- * Provides reactive access to buoy telemetry and locations,
- * abstracting transport protocol away from rendering layer.
- */
-
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import type { BuoyLocation, IBuoyDataAdapter } from './buoyTypes';
-import { IncoisOmniBuoyAdapter } from './buoyAdapter';
+import type { BuoyLocation } from './buoyTypes';
+import { fetchBuoyLocations } from './buoyAdapter';
 
-class BuoyServiceManager {
-  private static instance: BuoyServiceManager | null = null;
-  private adapter: IBuoyDataAdapter;
-
-  private constructor() {
-    this.adapter = new IncoisOmniBuoyAdapter(true);
-  }
-
-  public static getInstance(): BuoyServiceManager {
-    if (!BuoyServiceManager.instance) {
-      BuoyServiceManager.instance = new BuoyServiceManager();
-    }
-    return BuoyServiceManager.instance;
-  }
-
-  public getAdapter(): IBuoyDataAdapter {
-    return this.adapter;
-  }
-
-  public setAdapter(newAdapter: IBuoyDataAdapter): void {
-    this.adapter.dispose();
-    this.adapter = newAdapter;
-  }
-}
-
-export const buoyService = BuoyServiceManager.getInstance();
-
-export interface UseBuoyDataReturn {
-  buoys: BuoyLocation[];
-  selectedBuoy: BuoyLocation | null;
-  selectedBuoyId: string | null;
-  selectBuoy: (id: string | null) => void;
-  isLoading: boolean;
-  sourceName: string;
-}
-
-export function useBuoyData(): UseBuoyDataReturn {
+// Location/selection state lives in Explorer; observations live in the panel.
+// A telemetry event cannot update this hook or recreate globe geometry.
+export function useBuoyData() {
   const [buoys, setBuoys] = useState<BuoyLocation[]>([]);
   const [selectedBuoyId, setSelectedBuoyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const adapter = useMemo(() => buoyService.getAdapter(), []);
-
   useEffect(() => {
-    setIsLoading(true);
-    const unsubscribe = adapter.subscribe((updatedBuoys) => {
-      setBuoys(updatedBuoys);
-      setIsLoading(false);
+    const controller = new AbortController();
+    const refresh = () => void fetchBuoyLocations(controller.signal).then(next => {
+      setBuoys(previous => JSON.stringify(previous) === JSON.stringify(next) ? previous : next);
+    }).catch(() => {}).finally(() => {
+      if (!controller.signal.aborted) setIsLoading(false);
     });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [adapter]);
-
-  const selectBuoy = useCallback((id: string | null) => {
-    setSelectedBuoyId(id);
+    refresh();
+    const timer = setInterval(refresh, 30000);
+    return () => { controller.abort(); clearInterval(timer); };
   }, []);
-
-  const selectedBuoy = useMemo(() => {
-    if (!selectedBuoyId) return null;
-    return buoys.find((b) => b.id === selectedBuoyId) ?? null;
-  }, [buoys, selectedBuoyId]);
-
-  return {
-    buoys,
-    selectedBuoy,
-    selectedBuoyId,
-    selectBuoy,
-    isLoading,
-    sourceName: adapter.sourceName,
-  };
+  const selectBuoy = useCallback((id: string | null) => setSelectedBuoyId(id), []);
+  const selectedBuoy = useMemo(() => buoys.find(b => b.id === selectedBuoyId) ?? null, [buoys, selectedBuoyId]);
+  return { buoys, selectedBuoy, selectedBuoyId, selectBuoy, isLoading };
 }

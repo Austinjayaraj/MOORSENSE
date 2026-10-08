@@ -31,7 +31,7 @@ export function getBuoyColor(status?: BuoyStatus): string {
     case 'OFFLINE':
       return '#6b7280'; // Grey/dim
     default:
-      return '#10b981';
+      return '#6b7280';
   }
 }
 
@@ -74,7 +74,7 @@ export function BuoyMarker({
   const size = isSelected ? 0.034 : 0.022;
 
   // Pulse ring active for warning, critical, or selected states
-  const showPulse = buoy.status !== 'SAFE' || isSelected;
+  const showPulse = isSelected || buoy.status === 'WARNING' || buoy.status === 'CRITICAL' || buoy.status === 'ADRIFT';
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;

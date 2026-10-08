@@ -201,3 +201,6 @@ $RECYCLE.BIN/
 *~
 .fuse_hidden*
 .directory
+
+# Local buoy telemetry journal
+backend/data/*.sqlite3*

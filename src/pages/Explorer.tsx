@@ -9,6 +9,7 @@ import { BuoyMarkersLayer } from '../components/scene/buoy/BuoyMarkersLayer';
 import { CameraController } from '../components/scene/CameraController';
 import { HandControlWidget } from '../components/ui/HandControlWidget';
 import { HandCrosshair } from '../components/ui/HandCrosshair';
+import { BuoyDetailsPanel } from '../components/ui/BuoyDetailsPanel';
 import { useBuoyData } from '../services/buoy/buoyService';
 import { useHandGesture } from '../hooks/useHandGesture';
 import type { CameraStage } from '../types/ocean';
@@ -291,7 +292,7 @@ export default function Explorer({ initialStage = 'space' }: ExplorerProps) {
               }}
             />
             <span>OMNI BUOY NETWORK:</span>
-            <span style={{ color: '#ffffff', fontWeight: 700 }}>{buoys.length} ACTIVE</span>
+            <span style={{ color: '#ffffff', fontWeight: 700 }}>{buoys.length} STATIONS</span>
           </div>
 
           {/* Hand Control Status Badge (Requirement 12) */}
@@ -358,6 +359,8 @@ export default function Explorer({ initialStage = 'space' }: ExplorerProps) {
       </div>
 
 
+
+      <BuoyDetailsPanel buoy={selectedBuoy} onClose={() => selectBuoy(null)} />
 
       {/* Hand Gesture Control Widget — Bottom Right */}
       {isReadyToInteract && (

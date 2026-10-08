@@ -1,0 +1,80 @@
+{
+  "18.495,67.450": {
+    "depth_m": 3338.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "14.931,68.976": {
+    "depth_m": 3977.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "12.068,68.633": {
+    "depth_m": 4301.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "8.183,73.298": {
+    "depth_m": 2090.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "10.322,72.587": {
+    "depth_m": 1617.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "17.825,89.236": {
+    "depth_m": 2140.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "17.500,89.117": {
+    "depth_m": 2298.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "16.362,87.990": {
+    "depth_m": 2627.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "13.525,84.167": {
+    "depth_m": 3229.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "10.515,94.074": {
+    "depth_m": 2973.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "13.990,86.997": {
+    "depth_m": 3014.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "6.571,88.233": {
+    "depth_m": 3832.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  },
+  "0.000,0.000": {
+    "depth_m": 4934.0,
+    "dataset": "GEBCO_2026",
+    "confidence": "MEDIUM",
+    "method": "gebco_wms"
+  }
+}
