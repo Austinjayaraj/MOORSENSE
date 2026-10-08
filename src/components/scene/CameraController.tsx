@@ -68,12 +68,14 @@ export function CameraController({
     }
   }, [stage, camera]);
 
-  // Capture transition on station target
+  // Capture transition on station target (both selection and return to global)
+  const lastTargetStation = useRef(targetStation);
   useEffect(() => {
-    if (targetStation && isExploring) {
+    if (isExploring && targetStation !== lastTargetStation.current) {
       fromPos.current.copy(camera.position);
       fromTarget.current.copy(orbitTarget.current);
       progress.current = 0;
+      lastTargetStation.current = targetStation;
     }
   }, [targetStation, isExploring, camera]);
 

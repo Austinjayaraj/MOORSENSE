@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 
 interface IntroSequenceProps {
   onComplete: () => void;
 }
 
-// Subtle star background canvas
+// Subtle star background canvas (from Ocean Sentry)
 function useStarCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -55,36 +56,61 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
   // phase: 0=black, 1=title & tagline, 2=loading progress, 3=ready
   const [phase, setPhase] = useState(0);
   const [progress, setProgress] = useState(15);
-  const [loadingStep, setLoadingStep] = useState('Initializing Ocean Intelligence Engine...');
+  const [loadingStep, setLoadingStep] = useState('INITIALIZING MOORING INTEGRITY SYSTEM...');
   const [exiting, setExiting] = useState(false);
 
   useStarCanvas(canvasRef);
 
-  // Progressive intro timeline
+  // Preload textures in the background while intro is playing
   useEffect(() => {
-    const t0 = setTimeout(() => setPhase(1), 300);
+    const loader = new THREE.TextureLoader();
+    const textures = [
+      '/textures/earth_day.jpg',
+      '/textures/earth_night.png',
+      '/textures/earth_specular.jpg',
+      '/textures/earth_normal.jpg',
+      '/textures/earth_clouds.png?v=5',
+    ];
+    textures.forEach((url) => {
+      loader.load(url);
+    });
+  }, []);
+
+  // Progressive MoorSense intro timeline
+  useEffect(() => {
+    const t0 = setTimeout(() => {
+      setPhase(1);
+      setLoadingStep('INITIALIZING MOORING INTEGRITY SYSTEM...');
+      setProgress(20);
+    }, 350);
 
     const t1 = setTimeout(() => {
-      setProgress(45);
-      setLoadingStep('Loading NASA Earth Planetary Textures...');
+      setProgress(48);
+      setLoadingStep('OCEAN DATA STREAM ……… READY');
     }, 1100);
 
     const t2 = setTimeout(() => {
-      setProgress(78);
-      setLoadingStep('Synchronizing Indian Ocean Buoys & ARGO Floats...');
-    }, 2000);
+      setProgress(74);
+      setLoadingStep('DIGITAL TWIN ………….. READY');
+    }, 1900);
 
     const t3 = setTimeout(() => {
+      setProgress(90);
+      setLoadingStep('EARTH SYSTEM ………….. READY');
+    }, 2700);
+
+    const t4 = setTimeout(() => {
       setProgress(100);
-      setLoadingStep('Ocean Intelligence System Operational.');
+      setLoadingStep('SYSTEM ONLINE');
       setPhase(2);
-    }, 2800);
+    }, 3400);
 
     return () => {
       clearTimeout(t0);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t4);
     };
   }, []);
 
@@ -93,11 +119,11 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
     setTimeout(onComplete, 850);
   };
 
-  // Auto-advance after 4.5s
+  // Auto-advance after 4.6s
   useEffect(() => {
     const t = setTimeout(handleEnter, 4600);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -117,9 +143,9 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
         style={{ opacity: 0.8 }}
       />
 
-      {/* Main Scientific Intro Container */}
+      {/* Main MoorSense Scientific Intro Container */}
       <div className="relative z-10 flex flex-col items-center gap-6 text-center px-6 max-w-xl">
-        {/* Ocean Wave Vector Monogram */}
+        {/* MoorSense Mooring Vector Monogram */}
         <div
           style={{
             opacity: phase >= 1 ? 1 : 0,
@@ -127,28 +153,32 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
             transition: 'opacity 1s ease, transform 1s ease',
           }}
         >
-          <svg width="44" height="24" viewBox="0 0 48 28" fill="none">
+          <svg width="48" height="26" viewBox="0 0 48 26" fill="none">
+            {/* Mooring chain & ocean wave telemetry vectors */}
             <path
               d="M2 18 C8 10, 14 6, 20 12 C26 18, 32 22, 38 16 C42 12, 44 10, 46 8"
-              stroke="url(#introG)"
+              stroke="url(#moorG)"
               strokeWidth="2.4"
               strokeLinecap="round"
               fill="none"
             />
             <path
               d="M2 24 C8 16, 16 12, 22 18 C28 24, 34 26, 40 20 C43 17, 45 15, 46 14"
-              stroke="url(#introG2)"
+              stroke="url(#moorG2)"
               strokeWidth="1.4"
               strokeLinecap="round"
               fill="none"
-              opacity="0.6"
+              opacity="0.65"
             />
+            {/* Mooring buoy node beacon */}
+            <circle cx="20" cy="12" r="2.5" fill="#22d3ee" />
+            <circle cx="20" cy="12" r="5" stroke="#22d3ee" strokeWidth="0.8" opacity="0.5" />
             <defs>
-              <linearGradient id="introG" x1="2" y1="14" x2="46" y2="14" gradientUnits="userSpaceOnUse">
+              <linearGradient id="moorG" x1="2" y1="14" x2="46" y2="14" gradientUnits="userSpaceOnUse">
                 <stop stopColor="#22d3ee" />
                 <stop offset="1" stopColor="#3b82f6" />
               </linearGradient>
-              <linearGradient id="introG2" x1="2" y1="20" x2="46" y2="20" gradientUnits="userSpaceOnUse">
+              <linearGradient id="moorG2" x1="2" y1="20" x2="46" y2="20" gradientUnits="userSpaceOnUse">
                 <stop stopColor="#0ea5e9" />
                 <stop offset="1" stopColor="#6366f1" />
               </linearGradient>
@@ -156,7 +186,7 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
           </svg>
         </div>
 
-        {/* Title */}
+        {/* Title: MOORSENSE */}
         <div
           style={{
             opacity: phase >= 1 ? 1 : 0,
@@ -166,26 +196,26 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
         >
           <h1
             style={{
-              fontSize: 'clamp(1.8rem, 5vw, 3.2rem)',
+              fontSize: 'clamp(2rem, 5.5vw, 3.4rem)',
               fontWeight: 300,
               letterSpacing: '0.28em',
               color: '#ffffff',
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-              textShadow: '0 0 30px rgba(34,211,238,0.2)',
+              fontFamily: "'Space Grotesk', system-ui, -apple-system, sans-serif",
+              textShadow: '0 0 32px rgba(34,211,238,0.25)',
             }}
           >
-            OCEAN SENTRY
+            MOORSENSE
           </h1>
           <div
             style={{
               height: '1px',
-              background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.5), transparent)',
+              background: 'linear-gradient(90deg, transparent, rgba(34,211,238,0.6), transparent)',
               marginTop: '10px',
             }}
           />
         </div>
 
-        {/* Tagline */}
+        {/* Tagline / Subtitle: MOORING INTEGRITY DIGITAL TWIN SYSTEM */}
         <div
           style={{
             opacity: phase >= 1 ? 1 : 0,
@@ -196,22 +226,23 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
           <p
             style={{
               fontSize: 'clamp(0.75rem, 1.6vw, 0.95rem)',
-              letterSpacing: '0.2em',
-              color: 'rgba(34,211,238,0.85)',
+              letterSpacing: '0.22em',
+              color: 'rgba(34,211,238,0.9)',
               fontWeight: 400,
               lineHeight: 1.8,
+              fontFamily: "'Chakra Petch', 'Space Grotesk', sans-serif",
             }}
           >
-            OCEAN INTELLIGENCE. REAL OBSERVATIONS.
+            MOORING INTEGRITY
             <br />
-            BETTER DECISIONS.
+            DIGITAL TWIN SYSTEM
           </p>
         </div>
 
         {/* Scientific Loading / Progress Indicator */}
         <div
           style={{
-            width: '280px',
+            width: '290px',
             marginTop: '8px',
             opacity: phase >= 1 ? 1 : 0,
             transition: 'opacity 0.8s ease 0.3s',
@@ -220,9 +251,18 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
             gap: '8px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8px', letterSpacing: '0.12em', color: '#64748b' }}>
-            <span>{loadingStep}</span>
-            <span style={{ fontFamily: 'monospace', color: '#22d3ee' }}>{progress}%</span>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '8.5px',
+              letterSpacing: '0.12em',
+              color: '#94a3b8',
+              fontFamily: 'monospace',
+            }}
+          >
+            <span style={{ color: phase >= 2 ? '#38bdf8' : '#94a3b8' }}>{loadingStep}</span>
+            <span style={{ fontFamily: 'monospace', color: '#22d3ee', fontWeight: 600 }}>{progress}%</span>
           </div>
 
           <div
@@ -239,7 +279,7 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
                 width: `${progress}%`,
                 height: '100%',
                 background: 'linear-gradient(90deg, #0284c7, #22d3ee)',
-                boxShadow: '0 0 8px rgba(34,211,238,0.6)',
+                boxShadow: '0 0 10px rgba(34,211,238,0.7)',
                 transition: 'width 0.6s ease',
               }}
             />
@@ -258,42 +298,44 @@ export function IntroSequence({ onComplete }: IntroSequenceProps) {
           <button
             onClick={handleEnter}
             style={{
-              border: '1px solid rgba(34,211,238,0.45)',
+              border: '1px solid rgba(34,211,238,0.5)',
               background: 'rgba(34,211,238,0.08)',
               color: 'rgba(34,211,238,0.95)',
-              padding: '10px 28px',
-              fontSize: '0.72rem',
+              padding: '10px 30px',
+              fontSize: '0.74rem',
               letterSpacing: '0.24em',
               cursor: 'pointer',
               borderRadius: '3px',
               transition: 'all 0.25s ease',
-              fontFamily: 'system-ui, sans-serif',
-              boxShadow: '0 0 16px rgba(34,211,238,0.15)',
+              fontFamily: "'Space Grotesk', system-ui, sans-serif",
+              fontWeight: 500,
+              boxShadow: '0 0 18px rgba(34,211,238,0.2)',
             }}
             onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.background = 'rgba(34,211,238,0.16)';
-              (e.target as HTMLElement).style.borderColor = 'rgba(34,211,238,0.85)';
-              (e.target as HTMLElement).style.boxShadow = '0 0 24px rgba(34,211,238,0.35)';
+              (e.target as HTMLElement).style.background = 'rgba(34,211,238,0.18)';
+              (e.target as HTMLElement).style.borderColor = 'rgba(34,211,238,0.9)';
+              (e.target as HTMLElement).style.boxShadow = '0 0 28px rgba(34,211,238,0.4)';
             }}
             onMouseLeave={(e) => {
               (e.target as HTMLElement).style.background = 'rgba(34,211,238,0.08)';
-              (e.target as HTMLElement).style.borderColor = 'rgba(34,211,238,0.45)';
-              (e.target as HTMLElement).style.boxShadow = '0 0 16px rgba(34,211,238,0.15)';
+              (e.target as HTMLElement).style.borderColor = 'rgba(34,211,238,0.5)';
+              (e.target as HTMLElement).style.boxShadow = '0 0 18px rgba(34,211,238,0.2)';
             }}
           >
-            ENTER 3D GLOBE →
+            ENTER DIGITAL TWIN GLOBE →
           </button>
         </div>
 
         <div
           style={{
             fontSize: '0.62rem',
-            letterSpacing: '0.18em',
-            color: 'rgba(148,163,184,0.4)',
-            marginTop: '2px',
+            letterSpacing: '0.2em',
+            color: 'rgba(148,163,184,0.45)',
+            marginTop: '4px',
+            fontFamily: 'monospace',
           }}
         >
-          SIH 2026 · REAL-TIME OCEAN OBSERVATION & FORECAST PLATFORM
+          MOORSENSE · MOORING INTEGRITY DIGITAL TWIN SYSTEM
         </div>
       </div>
     </div>

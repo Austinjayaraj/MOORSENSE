@@ -145,7 +145,7 @@ export function RealisticEarth({ depth = 0, sunPosition = [12, 5, 8] }: Realisti
     const night = textureLoader.load('/textures/earth_night.png');
     const spec = textureLoader.load('/textures/earth_specular.jpg');
     const norm = textureLoader.load('/textures/earth_normal.jpg');
-    const cloud = textureLoader.load('/textures/earth_clouds.png?v=5');
+    const cloud = textureLoader.load('/textures/earth_clouds_noaa_latest.png');
 
 
 

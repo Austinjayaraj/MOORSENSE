@@ -9,9 +9,12 @@ from app.api.routes_comparison import router as comparison_router
 from app.api.routes_anomalies import router as anomalies_router
 from app.api.routes_argo import router as argo_router
 from app.api.routes_ingest import router as ingest_router
+from app.api.routes_clouds import router as clouds_router
 from app.services.ml_service import ml_service
 from app.services.anomaly_service import anomaly_service
 from app.services.ocean_service import ocean_service
+from app.services.cloud_service import cloud_service
+import asyncio
 
 logging.basicConfig(
     level=logging.DEBUG if settings.debug else logging.INFO,
@@ -40,7 +43,19 @@ app.include_router(comparison_router, prefix="/api")
 app.include_router(anomalies_router, prefix="/api")
 app.include_router(argo_router, prefix="/api")
 app.include_router(ingest_router, prefix="/api")
+app.include_router(clouds_router, prefix="/api")
 
+
+async def periodic_cloud_sync():
+    """Periodically checks NOAA SOS for new 10-minute satellite cloud frames."""
+    while True:
+        try:
+            logger.info("Checking NOAA SOS for real-time cloud frame updates...")
+            await asyncio.to_thread(cloud_service.fetch_latest_frame)
+        except Exception as e:
+            logger.warning(f"Periodic cloud sync encountered error: {e}")
+        # NOAA publishes frames ~every 10 minutes (600 seconds)
+        await asyncio.sleep(600)
 
 
 @app.on_event("startup")
@@ -49,4 +64,7 @@ async def startup():
     ml_service.load_model()
     anomaly_service.run_inference(ml_service)
     ocean_service.apply_ml_status(anomaly_service)
+    # Start background NOAA cloud sync
+    asyncio.create_task(periodic_cloud_sync())
     logger.info("Startup complete")
+
